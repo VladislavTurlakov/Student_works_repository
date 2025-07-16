@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CustomMessageBox</class>
+ <widget class="QDialog" name="CustomMessageBox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Предупреждение</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 164, 134);
+                  background-color: rgb(88, 88, 88);</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;
+text-align: center;</string>
+     </property>
+     <property name="text">
+      <string>Вы уверены, что хотите удалить запись?</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnYes">
+     <property name="styleSheet">
+      <string>
+        QPushButton {
+          background-color: #4CAF50;
+          color: white;
+          border-radius: 5px;
+          font-size: 16px;
+          padding: 8px 16px;
+          }
+          QPushButton:hover {
+          background-color: #45a049;
+          }
+          QPushButton:pressed {
+            background-color: #37823b;
+            color: white;
+            border: 1px solid #37823b;
+          }
+            </string>
+     </property>
+     <property name="text">
+      <string>Да</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnNo">
+     <property name="styleSheet">
+      <string>
+              QPushButton {
+                background-color: red;
+                color: white;
+                border-radius: 5px;
+                font-size: 16px;
+                padding: 8px 16px;
+              }
+              QPushButton:hover {
+                background-color: #a50000;
+                color: white;
+                border: 1px solid #a50000;
+              }
+              QPushButton:pressed {
+                background-color: #610a0a;
+                color: white;
+                border: 1px solid #610a0a;
+              }
+            </string>
+     </property>
+     <property name="text">
+      <string>Нет</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
