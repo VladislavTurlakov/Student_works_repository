@@ -7,8 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QAbstractItemView, QH
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 
-
-# основное окно ппограммы
+# Основное окно программы
 class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -34,7 +33,6 @@ class MyWidget(QMainWindow):
         self.storageLineEdit.returnPressed.connect(self.search)
 
         # Настройки таблицы
-
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.itemDoubleClicked.connect(self.on_item_double_click)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -47,8 +45,7 @@ class MyWidget(QMainWindow):
         self.header.ResizeMode(QHeaderView.Stretch)
         self.select_data()
 
-    def on_item_click(self, item):
-        # Выбираем всю строку при клике на ячейку
+    def on_item_click(self, item):  # выбираем всю строку при клике на ячейку
         self.tableWidget.selectRow(item.row())
 
     def on_item_double_click(self, item):  # открытие файла при двойном клике
@@ -189,8 +186,7 @@ class MyWidget(QMainWindow):
         self.add_work_form.work_added.connect(self.add_work)
         self.add_work_form.show()
 
-    def add_work(self, title, type, author, discipline, year, group, storage,
-                 fname=""):  # добавление работы в базу данных
+    def add_work(self, title, type, author, discipline, year, group, storage, fname=""):  # добавление работы в базу данных
         con = sqlite3.connect("db/trpo.db")
         cur = con.cursor()
 
@@ -223,7 +219,7 @@ class MyWidget(QMainWindow):
 
         self.select_data()
 
-    def delete(self):  # Удаление работы из базы данных
+    def delete(self):  # удаление работы из базы данных
         selected_items = self.tableWidget.selectedItems()
         if selected_items:
             selected_columns = {item.column() for item in selected_items}
@@ -279,6 +275,7 @@ class EditWorkForm(QDialog):
 
     def set_data(self, title, work_type, author, discipline, year, group, storage, work_id, fname):
         self.work_id = work_id
+
         # Заполнение виджетов формы данными из выбранной строки таблицы
         self.line_title.setText(title)
         self.line_type.setText(work_type)
@@ -289,9 +286,9 @@ class EditWorkForm(QDialog):
         self.line_storage.setText(storage)
         self.fname = fname
 
-    def edit_work(self):  # Метод для редактирования работы
+    def edit_work(self):  # метод для редактирования работы
+        
         # Получение текста из полей формы
-
         title = self.line_title.text().capitalize().strip()
         work_type = self.line_type.text().capitalize().strip()
         author = self.line_author.text().title().strip()
@@ -346,6 +343,7 @@ class AddWorkForm(QDialog):
         self.fname = QFileDialog.getOpenFileName(self)[0]
 
     def add_work(self):  # добавление работы
+
         # Получаем текст из всех полей формы
         title = self.line_title.text().capitalize().strip()
         work_type = self.line_type.text().capitalize().strip()
@@ -386,7 +384,6 @@ class ConfirmDelete(QDialog):
     def on_no_clicked(self):
         self.confirm_deletion.emit(False)
         self.reject()
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
