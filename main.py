@@ -243,7 +243,6 @@ class MyWidget(QMainWindow):
             con.commit()
         self.select_data()
 
-
 class EditWorkForm(QDialog):
     work_edited = pyqtSignal(str, str, str, str, str, str, str, int, str)  # cигнал для редактирования
 
@@ -311,7 +310,6 @@ class EditWorkForm(QDialog):
         self.work_edited.emit(title, work_type, author, discipline, year, group, storage, self.work_id, self.fname)
         self.close()
 
-
 # Окно добавления работы в базу данных
 class AddWorkForm(QDialog):
     work_added = pyqtSignal(str, str, str, str, str, str, str, str)
@@ -365,7 +363,6 @@ class AddWorkForm(QDialog):
 
         self.work_added.emit(title, work_type, author, discipline, year, group, storage, self.fname)
         self.close()
-
 
 # Всплывающее окно для подтверждения удаления
 class ConfirmDelete(QDialog):

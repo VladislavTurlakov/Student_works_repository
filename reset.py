@@ -1,6 +1,5 @@
 import sqlite3
 
-
 def reset():
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
@@ -112,7 +111,6 @@ PRAGMA foreign_keys = 1;
     con.commit()
     con.close()
 
-
 def fill():
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
@@ -166,7 +164,6 @@ def fill():
 
     con.close()
 
-
 def delete():
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
@@ -177,7 +174,6 @@ def delete():
     cur.executescript(query1)
     con.commit()
     con.close()
-
 
 delete()
 reset()
