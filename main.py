@@ -58,7 +58,8 @@ class MyWidget(QMainWindow):
                 QMessageBox.warning(self, 'Ошибка', 'Файл не найден.')
 
     def select_data(self, query=""):  # выбор данных из бд
-
+        
+        # Подключаемся к базе данных
         con = sqlite3.connect("db/trpo.db")
         cur = con.cursor()
         headers = ["ID работы", "Название", "Тип работы", "Автор", "Группа", "Дисциплина", "Год публикации",
@@ -128,9 +129,15 @@ class MyWidget(QMainWindow):
 
         self.select_data(query)
 
-    def open_editForm(self):
+    def open_editForm(self):  # открытие формы редактирования выбранной записи.
+
+        # Получаем список выделенных элементов (ячеек) в таблице
         selected_items = self.tableWidget.selectedItems()
+
+        # Проверяем, выбрал ли пользователь хотя бы одну строку
         if selected_items:
+
+            # Извлекаем значения из каждой нужной колонки этой строки
             work_id = int(self.tableWidget.item(selected_items[0].row(), 0).text())
             title = self.tableWidget.item(selected_items[0].row(), 1).text()
             work_type = self.tableWidget.item(selected_items[0].row(), 2).text()
@@ -141,45 +148,53 @@ class MyWidget(QMainWindow):
             storage = self.tableWidget.item(selected_items[0].row(), 7).text()
             fname = self.tableWidget.item(selected_items[0].row(), 8).text()
 
-            self.edit_work_form = EditWorkForm()
+            self.edit_work_form = EditWorkForm()  # создаём экземпляр формы редактирования
             self.edit_work_form.set_data(title, work_type, author, discipline, year, group, storage, work_id,
-                                         fname)  # Передача данных
+                                         fname)  # передаём данные выбранной записи в форму
+            
+            # Подключаем сигнал "work_edited" формы к методу "edit_work" — чтобы обновить таблицу после сохранения изменений
             self.edit_work_form.work_edited.connect(self.edit_work)
-            self.edit_work_form.show()
+            self.edit_work_form.show()  # отображаем форму редактирования
         else:
             QMessageBox.warning(self, 'Предупреждение', 'Выберите строку для редактирования')
 
     def edit_work(self, title, type, author, discipline, year, group, storage, work_id, fname):
+        
+        # Подключаемся к базе данных
         con = sqlite3.connect("db/trpo.db")
         cur = con.cursor()
 
+        # Разделяем ФИО автора на фамилию и имя
         author_first_name = author.split()[1]
         author_last_name = author.split()[0]
+
+        # Проверяем, есть ли студент с таким именем и фамилией в таблице students
         check_student = f"""SELECT * FROM students WHERE first_name = '{author_first_name}' AND last_name = '{author_last_name}'"""
         res = len(cur.execute(check_student).fetchall())
-        if res == 0:
+        if res == 0:  # если такого студента нет — добавляем его в базу
             query = f"INSERT INTO students (first_name, last_name, [group]) VALUES ('{author_first_name}', '{author_last_name}', '{group}');"
             cur.execute(query)
             con.commit()
 
+        # Проверяем, есть ли указанная дисциплина в таблице disciplines
         check_discipline = f"""SELECT * FROM disciplines WHERE discipline_name = '{discipline}'"""
         res = len(cur.execute(check_discipline).fetchall())
-        if res == 0:
+        if res == 0:  # если дисциплины нет — добавляем новую запись
             query = f"INSERT INTO disciplines (discipline_name) VALUES ('{discipline}');"
             cur.execute(query)
 
+        # Формируем SQL-запрос для обновления данных о работе
         work_query = """UPDATE works
                         SET work_title = ?, work_type = ?, student_id = (SELECT student_id FROM students WHERE first_name = ? AND last_name = ?),
                             discipline_id = (SELECT discipline_id FROM disciplines WHERE discipline_name = ?),
                             publication_date = ?, storage_location = ?, file = ?
                         WHERE work_id = ?;"""
 
+        # Выполняем запрос обновления с подстановкой параметров
         cur.execute(work_query,
                     (title, type, author_first_name, author_last_name, discipline, year, storage, fname, work_id))
-
-        con.commit()
-
-        self.select_data()
+        con.commit()  # сохраняем изменения в базе данных
+        self.select_data()  # обновляем данные в таблице интерфейса после редактирования
 
     def open_addForm(self):  # открытие окна добавления работы
         self.add_work_form = AddWorkForm()
@@ -187,13 +202,19 @@ class MyWidget(QMainWindow):
         self.add_work_form.show()
 
     def add_work(self, title, type, author, discipline, year, group, storage, fname=""):  # добавление работы в базу данных
+        
+        # Подключаемся к базе данных
         con = sqlite3.connect("db/trpo.db")
         cur = con.cursor()
 
         author_first_name = author.split()[1]
         author_last_name = author.split()[0]
+
+        # Проверяем, есть ли студент с таким именем и фамилией
         check_student = f"""SELECT * FROM students WHERE first_name = '{author_first_name}' AND last_name = '{author_last_name}'"""
         res = len(cur.execute(check_student).fetchall())
+        
+        # Если студента нет — добавляем новую запись
         if res == 0:
             query = f"INSERT INTO students (first_name, last_name, [group]) VALUES ('{author_first_name}', '{author_last_name}', '{group}');"
             cur.execute(query)
@@ -214,29 +235,33 @@ class MyWidget(QMainWindow):
                         WHERE s.first_name = ? AND s.last_name = ? AND d.discipline_name = ?;"""
 
         cur.execute(work_query, (title, type, year, storage, fname, author_first_name, author_last_name, discipline))
-
-        con.commit()
-
-        self.select_data()
+        con.commit()  # сохраняем изменения в базе данных
+        self.select_data()  # обновляем данные в таблице интерфейса после добавления новой записи
 
     def delete(self):  # удаление работы из базы данных
-        selected_items = self.tableWidget.selectedItems()
+        selected_items = self.tableWidget.selectedItems()  # получаем список выделенных элементов в таблице
+
+         # Проверяем, выбрал ли пользователь хотя бы одну строку
         if selected_items:
-            selected_columns = {item.column() for item in selected_items}
-            column_to_fetch = next(iter(selected_columns))
+            selected_columns = {item.column() for item in selected_items}  # определяем набор индексов выделенных колонок
+            column_to_fetch = next(iter(selected_columns))  # берём первую выделенную колонку
+
+            # Находим значение work_id из выделенной строки
             for item in selected_items:
                 if item.column() == column_to_fetch:
                     work_id = item.text()
                     break
 
-            self.confirm_del = ConfirmDelete()
+            self.confirm_del = ConfirmDelete()  # создаём окно подтверждения удаления
             self.confirm_del.confirm_deletion.connect(lambda confirm: self.process_deletion(confirm, work_id))
-            self.confirm_del.show()
+            self.confirm_del.show()  # отображаем окно подтверждения
         else:
             QMessageBox.warning(self, 'Предупреждение', 'Выберите строку для удаления')
 
-    def process_deletion(self, confirm, work_id=""):
-        if confirm:
+    def process_deletion(self, confirm, work_id=""):  # удаление выбранной работы из базы данных 
+        
+        # Проверяем, подтвердил ли пользователь удаление
+        if confirm:  
             con = sqlite3.connect("db/trpo.db")
             cur = con.cursor()
             cur.execute(f"DELETE FROM works WHERE work_id = {work_id};")

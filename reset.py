@@ -1,6 +1,7 @@
 import sqlite3
 
 def reset():
+    # Подключаемся к базе данных
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
 
@@ -112,6 +113,7 @@ PRAGMA foreign_keys = 1;
     con.close()
 
 def fill():
+    # Подключаемся к базе данных
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
 
@@ -165,6 +167,7 @@ def fill():
     con.close()
 
 def delete():
+    # Подключаемся к базе данных
     con = sqlite3.connect("db/trpo.db")
     cur = con.cursor()
 
